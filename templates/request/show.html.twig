@@ -1,0 +1,27 @@
+{% include 'base.html.twig' %}
+
+{% block body %}
+    <h1>Запрос {{ request.title }}</h1>
+    <div>
+        <table class="table table-sm">
+
+
+
+                <tr>
+                    <td class="table-active"> Сообщение</td>
+                    <td>{{ request.message}}</td>
+                </tr>
+                <tr>
+                    <td> Статус</td>
+                    <td> {{ request.status }}</td>
+                </tr>
+                <tr>
+                    <td> Дата создания</td>
+                    <td> {{ request.createAt.format('Y.m.d H:i:s') }}</td>
+                </tr>
+
+
+        </table>
+
+    </div>
+{% endblock %}
