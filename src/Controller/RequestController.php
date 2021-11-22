@@ -1,17 +1,26 @@
 <?php
 
 namespace App\Controller;
-use App\Entity\Request;
-use App\Repository\RequestRepository;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route ("/request")
- */
+use App\DTO\RequestDTO;
+use App\Entity\Request as RequestEntity;
+use App\Form\Type\RequestType;
+use App\Repository\RequestRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+   /**
+   * @Route ("/request")
+   */
 class RequestController extends AbstractController
 {
+    private EntityManagerInterface $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager){
+        $this->entityManager=$entityManager;
+    }
     /**
      * @Route ("/list", name="request.list")
      */
@@ -33,6 +42,31 @@ class RequestController extends AbstractController
         $request = $requestRepository->findById($id);
         return $this->render('request/show.html.twig', [
            'request'=> $request
+        ]);
+    }
+
+
+
+    /**
+     * @Route ("/add", name="request.add")
+     */
+    public function addAction(Request $request): Response
+    {
+        $requestDto= new RequestDTO();
+
+        $form = $this->createForm(RequestType::class, $requestDto, [
+            'action' => $this->generateUrl('request.add')]);
+
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+            $requestEntity = RequestEntity::createFromDTO($requestDto);
+            $this->entityManager->persist($requestEntity);
+            $this->entityManager->flush();
+            return  $this->redirectToRoute('request.show',['id'=>$requestEntity->getId()]);
+        }
+        return $this->renderForm('request/add.html.twig', [
+            'form'=> $form
         ]);
     }
 }

@@ -1,12 +1,9 @@
-{% include 'base.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block body %}
     <h1>Запрос {{ request.title }}</h1>
     <div>
         <table class="table table-sm">
-
-
-
                 <tr>
                     <td class="table-active"> Сообщение</td>
                     <td>{{ request.message}}</td>
